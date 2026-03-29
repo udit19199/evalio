@@ -16,6 +16,34 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Authentication and Dashboard
+
+This app uses email/password authentication with NextAuth credentials and Prisma SQLite.
+
+1. Create `.env.local` with:
+
+```bash
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="replace-this-with-a-random-secret"
+```
+
+2. Run Prisma migration and generate client (already done in this repo, rerun when schema changes):
+
+```bash
+bunx prisma migrate dev
+bunx prisma generate
+```
+
+3. Start the app and use routes:
+
+- `/signup` to create account (auto-signs in)
+- `/signin` to sign in
+- `/dashboard` to view total attempts, average score, and recent attempts
+- `/quiz` to take the quiz
+
+Quiz attempts are stored in SQLite and tied to the authenticated user account.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
