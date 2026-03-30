@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, AnimatePresence } from "motion/react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { Question } from "@/data/questions";
 import { cn } from "@/lib/utils";
 import { Timer, ArrowRight, CheckCircle2, XCircle } from "lucide-react";
@@ -14,6 +13,8 @@ type QuizCardProps = {
   isLocked: boolean;
   isTimedOut: boolean;
   onSelectAnswer: (answer: string) => void;
+  onPrevious: () => void;
+  canGoPrevious: boolean;
   onNext: () => void;
   timeLeft: number | null;
   timerDuration: number;
@@ -27,6 +28,8 @@ export default function QuizCard({
   isLocked,
   isTimedOut,
   onSelectAnswer,
+  onPrevious,
+  canGoPrevious,
   onNext,
   timeLeft,
 }: QuizCardProps) {
@@ -60,10 +63,22 @@ export default function QuizCard({
       </header>
 
       {/* Question Box */}
-      <div className="bg-[#ffde59] border-[3px] md:border-[4px] border-black p-6 md:p-12 mb-6 md:mb-8 shadow-[6px_6px_0px_#000] md:shadow-[8px_8px_0px_#000]">
-        <h2 className="text-2xl sm:text-3xl md:text-5xl font-black leading-tight tracking-tight">
-          {question.code}
-        </h2>
+      <div className="bg-[#ffde59] border-[3px] md:border-[4px] border-black p-6 md:p-8 mb-6 md:mb-8 shadow-[6px_6px_0px_#000] md:shadow-[8px_8px_0px_#000]">
+        {question.topicName && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            <div className="inline-block border-2 border-black bg-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+              Topic: {question.topicName}
+            </div>
+            {question.subtopic && (
+              <div className="inline-block border-2 border-black bg-[#4d79ff] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white">
+                Tag: {question.subtopic}
+              </div>
+            )}
+          </div>
+        )}
+        <pre className="font-mono text-sm md:text-base leading-relaxed whitespace-pre overflow-x-auto">
+          <code>{question.code}</code>
+        </pre>
       </div>
       
       {/* Options Grid */}
@@ -127,13 +142,22 @@ export default function QuizCard({
           </AnimatePresence>
         </div>
 
-        <button 
-          onClick={onNext}
-          disabled={!isLocked && !isTimedOut}
-          className="bg-black text-white px-10 py-5 md:px-16 md:py-6 text-xl md:text-2xl font-black hover:bg-[#4d79ff] transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0 w-full md:w-auto flex items-center justify-center gap-3"
-        >
-          {questionNumber === totalQuestions ? "FINISH" : "NEXT"} <ArrowRight className="size-5 md:size-6" />
-        </button>
+        <div className="flex w-full shrink-0 flex-col gap-3 md:w-auto md:flex-row">
+          <button
+            onClick={onPrevious}
+            disabled={!canGoPrevious}
+            className="border-4 border-black bg-white px-8 py-4 text-lg font-black transition-colors hover:bg-zinc-100 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            PREVIOUS
+          </button>
+          <button 
+            onClick={onNext}
+            disabled={!isLocked && !isTimedOut}
+            className="bg-black text-white px-10 py-5 md:px-16 md:py-6 text-xl md:text-2xl font-black hover:bg-[#4d79ff] transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+          >
+            {questionNumber === totalQuestions ? "FINISH" : "NEXT"} <ArrowRight className="size-5 md:size-6" />
+          </button>
+        </div>
       </div>
     </motion.div>
   );

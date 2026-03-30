@@ -11,7 +11,10 @@ export function MockupNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-4">
+    <nav
+      className="fixed left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-4"
+      style={{ bottom: "max(2rem, env(safe-area-inset-bottom))" }}
+    >
       <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/80 p-1 backdrop-blur-md shadow-2xl">
         {VERSIONS.map((v) => (
           <Link

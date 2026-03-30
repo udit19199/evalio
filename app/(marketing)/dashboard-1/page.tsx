@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { motion } from "motion/react";
 import { MockupNav } from "@/components/MockupNav";
 import { FileText, AlertCircle, CheckCircle2, Clock, Plus } from "lucide-react";
 
@@ -46,7 +44,7 @@ export default function Dashboard1() {
                       { name: "Organic Chemistry Ch. 4", mastery: 42, last: "8/20", due: "Immediate" },
                       { name: "Microeconomics - Markets", mastery: 68, last: "14/20", due: "In 2 Days" },
                     ].map((row, i) => (
-                      <tr key={i} className="border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors group cursor-pointer">
+                      <tr key={i} className="border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors group">
                         <td className="px-8 py-6 flex items-center gap-4">
                           <FileText className="size-4 opacity-20 group-hover:text-primary group-hover:opacity-100 transition-all" />
                           <span className="font-bold">{row.name}</span>

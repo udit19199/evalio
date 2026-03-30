@@ -10,7 +10,8 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
     email: formData.get("email"),
-    educationStatus: formData.get("educationStatus"),
+    educationStatus: formData.get("educationStatus") || undefined,
+    course: formData.get("course") || undefined,
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
   });
@@ -22,7 +23,7 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
     };
   }
 
-  const { firstName, lastName, email, educationStatus, password } = validatedFields.data;
+  const { firstName, lastName, email, educationStatus, course, password } = validatedFields.data;
 
   try {
     const existingUser = await prisma.user.findUnique({
@@ -43,7 +44,8 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
         firstName,
         lastName,
         email,
-        educationStatus,
+        educationStatus: educationStatus || null,
+        course: course || null,
         passwordHash,
       },
     });

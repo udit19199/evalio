@@ -6,6 +6,7 @@ import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   FileQuestion,
+  LibraryBig,
   User,
   LogOut,
   ChevronLeft,
@@ -13,7 +14,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface DashboardSidebarProps {
@@ -25,11 +26,6 @@ export function DashboardSidebar({ userEmail }: DashboardSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileOpen(false);
-  }, [pathname]);
-
   const handleSignOut = () => {
     signOut({ callbackUrl: "/signin" });
   };
@@ -37,6 +33,7 @@ export function DashboardSidebar({ userEmail }: DashboardSidebarProps) {
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", color: "#4d79ff" },
     { href: "/quiz", icon: FileQuestion, label: "Quiz", color: "#ff4d4d" },
+    { href: "/questions", icon: LibraryBig, label: "Questions", color: "#ffde59" },
     { href: "/settings", icon: User, label: "Settings", color: "#ffde59" },
   ];
 
@@ -47,6 +44,9 @@ export function DashboardSidebar({ userEmail }: DashboardSidebarProps) {
         <span className="font-black text-xl tracking-tighter italic">Evalio.</span>
         <button 
           onClick={() => setIsMobileOpen(!isMobileOpen)}
+          aria-label={isMobileOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isMobileOpen}
+          aria-controls="dashboard-mobile-sidebar"
           className="size-10 border-2 border-black flex items-center justify-center bg-[#ffde59] shadow-[4px_4px_0px_#000]"
         >
           {isMobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
@@ -55,6 +55,7 @@ export function DashboardSidebar({ userEmail }: DashboardSidebarProps) {
 
       {/* Sidebar / Mobile Overlay */}
       <aside 
+        id="dashboard-mobile-sidebar"
         className={cn(
           "fixed inset-y-0 left-0 lg:sticky lg:top-0 h-screen border-r-[4px] border-black bg-white transition-all duration-300 flex flex-col z-50",
           isCollapsed ? "lg:w-[80px]" : "lg:w-[280px]",
@@ -84,6 +85,7 @@ export function DashboardSidebar({ userEmail }: DashboardSidebarProps) {
                 <li key={item.href} className="flex justify-center">
                   <Link 
                     href={item.href}
+                    onClick={() => setIsMobileOpen(false)}
                     className={cn(
                       "flex items-center border-[3px] border-black transition-all group relative",
                       isCollapsed ? "lg:justify-center lg:w-12 lg:h-12" : "gap-4 p-4 w-full",

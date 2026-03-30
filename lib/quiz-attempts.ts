@@ -29,15 +29,23 @@ export const createAttempt = async (
     totalQuestions: number;
     scorePercent: number;
     topicId?: string;
+    topicIds?: string[];
+    skillId?: string;
   },
 ): Promise<QuizAttempt> => {
+  const resolvedTopicIds = input.topicIds && input.topicIds.length > 0
+    ? input.topicIds
+    : input.topicId
+      ? [input.topicId]
+      : [];
+
   const created = await prisma.attempt.create({
     data: {
       userId: input.userId,
       correctAnswers: input.correctAnswers,
       totalQuestions: input.totalQuestions,
       scorePercent: input.scorePercent,
-      topicId: input.topicId,
+      topicId: resolvedTopicIds[0],
     },
     include: {
       user: { select: { email: true } },
@@ -45,35 +53,37 @@ export const createAttempt = async (
   });
 
   // If topic specific, update mastery
-  if (input.topicId) {
-    const existingMastery = await prisma.userTopicMastery.findUnique({
-      where: { userId_topicId: { userId: input.userId, topicId: input.topicId } }
-    });
+  if (resolvedTopicIds.length > 0) {
+    for (const topicId of resolvedTopicIds) {
+      const existingMastery = await prisma.userTopicMastery.findUnique({
+        where: { userId_topicId: { userId: input.userId, topicId } }
+      });
 
-    if (existingMastery) {
-      const newCount = existingMastery.attemptsCount + 1;
-      const newAvg = (existingMastery.averageScore * existingMastery.attemptsCount + input.scorePercent) / newCount;
-      
-      await prisma.userTopicMastery.update({
-        where: { id: existingMastery.id },
-        data: {
-          averageScore: newAvg,
-          attemptsCount: newCount,
-        }
-      });
-    } else {
-      await prisma.userTopicMastery.create({
-        data: {
-          userId: input.userId,
-          topicId: input.topicId,
-          averageScore: input.scorePercent,
-          attemptsCount: 1,
-        }
-      });
+      if (existingMastery) {
+        const newCount = existingMastery.attemptsCount + 1;
+        const newAvg = (existingMastery.averageScore * existingMastery.attemptsCount + input.scorePercent) / newCount;
+
+        await prisma.userTopicMastery.update({
+          where: { id: existingMastery.id },
+          data: {
+            averageScore: newAvg,
+            attemptsCount: newCount,
+          }
+        });
+      } else {
+        await prisma.userTopicMastery.create({
+          data: {
+            userId: input.userId,
+            topicId,
+            averageScore: input.scorePercent,
+            attemptsCount: 1,
+          }
+        });
+      }
+
+      await updateTopicRanks(topicId);
     }
 
-    // Trigger Ranking Updates (Optimistic / Sequential for now)
-    await updateTopicRanks(input.topicId);
     await calculateHireability(input.userId);
     await updateGlobalRanks();
   }

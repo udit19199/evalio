@@ -4,7 +4,8 @@ export const SignupFormSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required." }).trim(),
   lastName: z.string().min(1, { message: "Last name is required." }).trim(),
   email: z.string().email({ message: "Please enter a valid email." }).trim().toLowerCase(),
-  educationStatus: z.string().min(1, { message: "Education status is required." }).trim(),
+  educationStatus: z.string().optional(),
+  course: z.string().optional(),
   password: z
     .string()
     .min(6, { message: "Be at least 6 characters long." })
@@ -18,7 +19,8 @@ export const SignupFormSchema = z.object({
 export const UpdateProfileSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required." }).trim(),
   lastName: z.string().min(1, { message: "Last name is required." }).trim(),
-  educationStatus: z.string().min(1, { message: "Education status is required." }).trim(),
+  educationStatus: z.string().optional(),
+  course: z.string().optional(),
 });
 
 export const ChangePasswordSchema = z.object({
@@ -33,6 +35,7 @@ export type FormState =
         lastName?: string[];
         email?: string[];
         educationStatus?: string[];
+        course?: string[];
         password?: string[];
         confirmPassword?: string[];
         currentPassword?: string[];

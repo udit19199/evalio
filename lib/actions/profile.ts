@@ -13,7 +13,8 @@ export async function updateProfile(state: FormState, formData: FormData): Promi
   const validatedFields = UpdateProfileSchema.safeParse({
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
-    educationStatus: formData.get("educationStatus"),
+    educationStatus: formData.get("educationStatus") || undefined,
+    course: formData.get("course") || undefined,
   });
 
   if (!validatedFields.success) {
@@ -25,7 +26,11 @@ export async function updateProfile(state: FormState, formData: FormData): Promi
   try {
     await prisma.user.update({
       where: { id: session.userId },
-      data: validatedFields.data,
+      data: {
+        ...validatedFields.data,
+        educationStatus: validatedFields.data.educationStatus || null,
+        course: validatedFields.data.course || null,
+      },
     });
 
     revalidatePath("/settings");

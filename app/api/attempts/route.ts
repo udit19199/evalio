@@ -8,6 +8,8 @@ const attemptPayloadSchema = z.object({
   correctAnswers: z.number().int().min(0),
   totalQuestions: z.number().int().min(1),
   scorePercent: z.number().min(0).max(100),
+  topicIds: z.array(z.string()).optional(),
+  skillId: z.string().optional(),
 });
 
 export async function GET() {
@@ -47,6 +49,8 @@ export async function POST(request: Request) {
     correctAnswers: payload.correctAnswers,
     totalQuestions: payload.totalQuestions,
     scorePercent: payload.scorePercent,
+    topicIds: payload.topicIds,
+    skillId: payload.skillId,
   });
 
   return NextResponse.json({ attempt }, { status: 201 });

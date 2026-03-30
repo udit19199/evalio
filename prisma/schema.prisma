@@ -2,12 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/client"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -18,7 +18,8 @@ model User {
   passwordHash String
   
   // CS Grad Specific Stats
-  educationStatus String @default("Undergraduate") // e.g. "1st Year", "2nd Year", "3rd Year", "4th Year", "Postgraduate", "Graduate (Seeking)", "Professional"
+  educationStatus String? 
+  course          String? 
   hireabilityScore Float @default(0) 
   overallRank      Int?
   
@@ -78,6 +79,7 @@ model Material {
 model Question {
   id            String   @id @default(cuid())
   text          String   
+  subtopic      String?
   options       String   
   correctAnswer String
   explanation   String

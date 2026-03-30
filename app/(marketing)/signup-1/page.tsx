@@ -20,22 +20,22 @@ export default function Signup1() {
             className="relative bg-white p-12 md:p-16 shadow-2xl border border-zinc-100 w-full max-w-lg"
           >
             <h1 className="text-4xl font-serif font-black mb-8">Join the Studio.</h1>
-            <div className="space-y-6">
+            <form className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest opacity-40">Email Address</label>
-                <input type="email" className="w-full border-b-2 border-zinc-100 py-3 outline-none focus:border-black transition-colors bg-transparent" placeholder="you@example.com" />
+                <label htmlFor="signup-1-email" className="text-[10px] font-bold uppercase tracking-widest opacity-40">Email Address</label>
+                <input id="signup-1-email" name="email" autoComplete="email" type="email" className="w-full border-b-2 border-zinc-100 py-3 outline-none focus:border-black transition-colors bg-transparent" placeholder="you@example.com" />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest opacity-40">Password</label>
-                <input type="password" className="w-full border-b-2 border-zinc-100 py-3 outline-none focus:border-black transition-colors bg-transparent" placeholder="••••••••" />
+                <label htmlFor="signup-1-password" className="text-[10px] font-bold uppercase tracking-widest opacity-40">Password</label>
+                <input id="signup-1-password" name="password" autoComplete="new-password" type="password" className="w-full border-b-2 border-zinc-100 py-3 outline-none focus:border-black transition-colors bg-transparent" placeholder="••••••••" />
               </div>
-              <button className="w-full bg-[#1a1a1a] text-white py-5 font-bold text-lg mt-8 hover:translate-y-[-2px] transition-all">
+              <button type="submit" className="w-full bg-[#1a1a1a] text-white py-5 font-bold text-lg mt-8 hover:translate-y-[-2px] transition-all">
                 Create Account
               </button>
               <p className="text-center text-xs text-zinc-400 mt-6">
                 Already have an account? <Link href="/signin-1" className="text-black font-bold underline">Sign In</Link>
               </p>
-            </div>
+            </form>
           </motion.div>
         </div>
       </div>

@@ -3,6 +3,8 @@ export type Difficulty = "easy" | "medium" | "hard";
 export type Question = {
   id: string;
   code: string;
+  topicName?: string;
+  subtopic?: string;
   options: string[];
   correctAnswer: string;
   explanation: string;

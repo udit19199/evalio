@@ -7,6 +7,8 @@ import { prisma } from "@/lib/prisma";
 const updateProfileSchema = z.object({
   firstName: z.string().min(1).max(100).optional(),
   lastName: z.string().min(1).max(100).optional(),
+  educationStatus: z.string().min(1).max(100).optional(),
+  course: z.string().min(1).max(100).optional(),
 });
 
 export async function GET() {
@@ -19,7 +21,15 @@ export async function GET() {
   try {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, email: true, firstName: true, lastName: true, createdAt: true },
+      select: { 
+        id: true, 
+        email: true, 
+        firstName: true, 
+        lastName: true, 
+        educationStatus: true,
+        course: true,
+        createdAt: true 
+      },
     });
 
     if (!user) {
@@ -56,7 +66,15 @@ export async function PATCH(request: NextRequest) {
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: parsed.data,
-      select: { id: true, email: true, firstName: true, lastName: true, updatedAt: true },
+      select: { 
+        id: true, 
+        email: true, 
+        firstName: true, 
+        lastName: true, 
+        educationStatus: true,
+        course: true,
+        updatedAt: true 
+      },
     });
 
     return NextResponse.json(updatedUser);

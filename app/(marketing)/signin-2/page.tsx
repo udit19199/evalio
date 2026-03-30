@@ -24,19 +24,19 @@ export default function Signin2() {
             className="bg-white border-[4px] border-black p-12 shadow-[12px_12px_0px_#1a1a1a] w-full max-w-lg"
           >
             <h1 className="text-5xl font-black mb-8 italic">Welcome Back.</h1>
-            <div className="space-y-8">
+            <form className="space-y-8">
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest">Email</label>
-                <input type="email" className="w-full border-4 border-black p-4 outline-none focus:bg-[#4d79ff] focus:text-white transition-colors font-bold" />
+                <label htmlFor="signin-2-email" className="text-xs font-black uppercase tracking-widest">Email</label>
+                <input id="signin-2-email" name="email" autoComplete="username" type="email" className="w-full border-4 border-black p-4 outline-none focus:bg-[#4d79ff] focus:text-white transition-colors font-bold" />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest">Secret Word</label>
-                <input type="password" className="w-full border-4 border-black p-4 outline-none focus:bg-[#4d79ff] focus:text-white transition-colors font-bold" />
+                <label htmlFor="signin-2-password" className="text-xs font-black uppercase tracking-widest">Secret Word</label>
+                <input id="signin-2-password" name="password" autoComplete="current-password" type="password" className="w-full border-4 border-black p-4 outline-none focus:bg-[#4d79ff] focus:text-white transition-colors font-bold" />
               </div>
-              <button className="w-full bg-[#ffde59] text-black py-6 font-black text-2xl border-4 border-black shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_#1a1a1a] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all">
+              <button type="submit" className="w-full bg-[#ffde59] text-black py-6 font-black text-2xl border-4 border-black shadow-[6px_6px_0px_#1a1a1a] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_#1a1a1a] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all">
                 Access Core
               </button>
-            </div>
+            </form>
           </motion.div>
         </div>
       </div>

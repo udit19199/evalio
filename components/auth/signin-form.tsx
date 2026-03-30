@@ -75,9 +75,12 @@ export function SignInForm() {
         )}
 
         <div className="space-y-1.5 md:space-y-2">
-          <label className="text-[10px] md:text-xs font-black uppercase tracking-widest block">Email</label>
+          <label htmlFor="signin-email" className="text-[10px] md:text-xs font-black uppercase tracking-widest block">Email</label>
           <input 
+            id="signin-email"
+            name="email"
             type="email" 
+            autoComplete="username"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -85,9 +88,12 @@ export function SignInForm() {
           />
         </div>
         <div className="space-y-1.5 md:space-y-2">
-          <label className="text-[10px] md:text-xs font-black uppercase tracking-widest block">Password</label>
+          <label htmlFor="signin-password" className="text-[10px] md:text-xs font-black uppercase tracking-widest block">Password</label>
           <input 
+            id="signin-password"
+            name="password"
             type="password" 
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
