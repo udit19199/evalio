@@ -2,10 +2,10 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const protectedRoutes = ["/quiz", "/dashboard", "/api/attempts"];
+const protectedRoutes = ["/quiz", "/dashboard", "/api/attempts", "/settings"];
 const authPages = ["/signin", "/signup"];
 
-export async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = await getToken({
     req: request,
@@ -18,7 +18,7 @@ export async function proxy(request: NextRequest) {
 
   if (!isAuthenticated && isProtected) {
     const signInUrl = new URL("/signin", request.url);
-    signInUrl.searchParams.set("callbackUrl", pathname);
+    signInUrl.searchParams.set("callbackUrl", `${pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(signInUrl);
   }
 
@@ -30,5 +30,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/quiz/:path*", "/dashboard/:path*", "/api/attempts/:path*", "/signin", "/signup"],
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
 };
