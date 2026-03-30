@@ -1,6 +1,10 @@
 "use client";
 
+import { motion, AnimatePresence } from "motion/react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { Question } from "@/data/questions";
+import { cn } from "@/lib/utils";
+import { Timer, ArrowRight, CheckCircle2, XCircle } from "lucide-react";
 
 type QuizCardProps = {
   question: Question;
@@ -12,6 +16,7 @@ type QuizCardProps = {
   onSelectAnswer: (answer: string) => void;
   onNext: () => void;
   timeLeft: number | null;
+  timerDuration: number;
 };
 
 export default function QuizCard({
@@ -28,81 +33,108 @@ export default function QuizCard({
   const isCorrect = selectedAnswer === question.correctAnswer;
 
   return (
-    <div className="w-full max-w-4xl rounded-2xl border border-zinc-800 bg-zinc-950/90 p-6 shadow-2xl shadow-zinc-950/40 md:p-8">
-      <div className="mb-5 flex items-center justify-between gap-3 text-sm text-zinc-300">
-        <span className="rounded-full border border-zinc-700 bg-zinc-900 px-3 py-1 font-semibold uppercase tracking-wide text-zinc-200">
-          {question.difficulty}
-        </span>
-        <span className="font-medium text-zinc-400">
-          {questionNumber}/{totalQuestions}
-        </span>
-      </div>
+    <motion.div
+      initial={{ x: 20, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      className="w-full max-w-5xl mx-auto pb-24 md:pb-32"
+    >
+      {/* Header Info */}
+      <header className="flex justify-between items-center border-b-[3px] md:border-b-4 border-black pb-4 md:pb-6 mb-6 md:mb-8">
+        <div className="flex items-center gap-3 md:gap-4">
+          <div className="px-3 py-1 md:px-4 md:py-1 bg-[#ff4d4d] text-white font-black text-[10px] md:text-xs uppercase tracking-widest border-2 border-black shadow-[3px_3px_0px_#000] md:shadow-[4px_4px_0px_#000]">
+            Study_Run
+          </div>
+          <div className="font-black text-xl md:text-2xl tracking-tighter">
+            {questionNumber.toString().padStart(2, '0')} / {totalQuestions.toString().padStart(2, '0')}
+          </div>
+        </div>
+        {timeLeft !== null && (
+          <div className={cn(
+            "flex items-center gap-2 px-3 py-1 md:px-4 md:py-1 border-2 border-black font-black text-xs md:text-sm tabular-nums",
+            timeLeft < 5 ? "bg-[#ff4d4d] text-white animate-pulse" : "bg-white"
+          )}>
+            <Timer className="size-3.5 md:size-4" />
+            {timeLeft}s
+          </div>
+        )}
+      </header>
 
-      <div className="mb-5 overflow-x-auto rounded-xl border border-zinc-800 bg-[#0b1220] p-4">
-        <pre className="text-sm leading-6 text-cyan-100">
-          <code>{question.code}</code>
-        </pre>
+      {/* Question Box */}
+      <div className="bg-[#ffde59] border-[3px] md:border-[4px] border-black p-6 md:p-12 mb-6 md:mb-8 shadow-[6px_6px_0px_#000] md:shadow-[8px_8px_0px_#000]">
+        <h2 className="text-2xl sm:text-3xl md:text-5xl font-black leading-tight tracking-tight">
+          {question.code}
+        </h2>
       </div>
-
-      <div className="grid gap-3">
-        {question.options.map((option) => {
+      
+      {/* Options Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        {question.options.map((option, i) => {
           const isSelected = selectedAnswer === option;
           const isAnswer = option === question.correctAnswer;
-
-          let optionClassName =
-            "border-zinc-700 bg-zinc-900/60 text-zinc-100 hover:border-zinc-500";
-
-          if (isLocked && isAnswer) {
-            optionClassName = "border-emerald-400 bg-emerald-900/40 text-emerald-100";
-          } else if (isLocked && isSelected && !isAnswer) {
-            optionClassName = "border-rose-400 bg-rose-900/40 text-rose-100";
-          } else if (!isLocked && isSelected) {
-            optionClassName = "border-sky-400 bg-sky-900/40 text-sky-100";
-          }
+          const showSuccess = isLocked && isAnswer;
+          const showError = isLocked && isSelected && !isAnswer;
+          
+          const colors = ["#ff4d4d", "#4d79ff", "#ffde59", "#1a1a1a"];
+          const bgColor = showSuccess ? "#22c55e" : showError ? "#ff4d4d" : isSelected ? "#ffde59" : "white";
 
           return (
-            <button
-              key={option}
-              type="button"
-              onClick={() => onSelectAnswer(option)}
+            <button 
+              key={i} 
               disabled={isLocked}
-              className={`w-full rounded-lg border px-4 py-3 text-left text-sm font-medium transition ${optionClassName} disabled:cursor-not-allowed`}
+              onClick={() => onSelectAnswer(option)}
+              className={cn(
+                "flex items-center gap-4 md:gap-6 p-6 md:p-8 border-[3px] md:border-[4px] border-black font-black text-xl md:text-2xl transition-all text-left group relative overflow-hidden",
+                !isLocked && "hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[6px_6px_0px_#1a1a1a] md:hover:shadow-[8px_8px_0px_#1a1a1a]",
+                isLocked && !isSelected && !isAnswer && "opacity-40 grayscale-[0.5]"
+              )}
+              style={{ backgroundColor: bgColor }}
             >
-              {option}
+              <span className={cn(
+                "size-8 md:size-10 flex items-center justify-center rounded-full border-2 md:border-4 border-black text-xs md:text-sm shrink-0",
+                showSuccess ? "bg-white" : showError ? "bg-white" : ""
+              )} style={{ backgroundColor: (!showSuccess && !showError) ? colors[i % 4] : undefined, color: (!showSuccess && !showError) ? "white" : "black" }}>
+                {String.fromCharCode(65 + i)}
+              </span>
+              <span className="relative z-10 break-words">{option}</span>
+              
+              {showSuccess && (
+                <div className="absolute inset-0 bg-green-500/10 animate-pulse pointer-events-none" />
+              )}
             </button>
           );
         })}
       </div>
 
-      {(isLocked || isTimedOut) && selectedAnswer && (
-        <div className="mt-5 rounded-xl border border-zinc-700 bg-zinc-900/80 p-4 text-sm">
-          <p className={`font-semibold ${isCorrect ? "text-emerald-300" : "text-rose-300"}`}>
-            {isCorrect ? "Correct" : "Incorrect"}
-          </p>
-          <p className="mt-2 text-zinc-200">{question.explanation}</p>
+      {/* Action / Explanation Area */}
+      <div className="mt-8 md:mt-12 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+        <div className="flex-1 w-full">
+          <AnimatePresence>
+            {(isLocked || isTimedOut) && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white border-[3px] md:border-4 border-black p-5 md:p-6 shadow-[4px_4px_0px_#000] md:shadow-[6px_6px_0px_#000]"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  {isCorrect ? <CheckCircle2 className="size-4 text-green-600" /> : <XCircle className="size-4 text-red-600" />}
+                  <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-40">
+                    {isCorrect ? "Analysis Validated" : "Correction Required"}
+                  </p>
+                </div>
+                <p className="font-bold text-base md:text-lg leading-snug">{question.explanation}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      )}
 
-      {isTimedOut && !selectedAnswer && (
-        <div className="mt-5 rounded-xl border border-amber-500/40 bg-amber-900/20 p-4 text-sm text-amber-200">
-          Time is up. Correct answer: <span className="font-semibold">{question.correctAnswer}</span>
-          <p className="mt-2 text-zinc-200">{question.explanation}</p>
-        </div>
-      )}
-
-      <div className="mt-6 flex items-center justify-between gap-4">
-        <span className="text-sm text-zinc-400">
-          {timeLeft === null ? "No timer" : `Time left: ${timeLeft}s`}
-        </span>
-        <button
-          type="button"
+        <button 
           onClick={onNext}
           disabled={!isLocked && !isTimedOut}
-          className="rounded-lg bg-amber-400 px-5 py-2.5 text-sm font-semibold text-zinc-900 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400"
+          className="bg-black text-white px-10 py-5 md:px-16 md:py-6 text-xl md:text-2xl font-black hover:bg-[#4d79ff] transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0 w-full md:w-auto flex items-center justify-center gap-3"
         >
-          {questionNumber === totalQuestions ? "Finish" : "Next"}
+          {questionNumber === totalQuestions ? "FINISH" : "NEXT"} <ArrowRight className="size-5 md:size-6" />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

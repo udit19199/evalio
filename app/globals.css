@@ -49,8 +49,16 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Brand palette */
+  --brand-ink: 18 18 20;
+  --brand-1: 9 122 119;
+  --brand-2: 255 173 66;
+  --glass: 255 255 255 / 6%;
+  --grain: 0 0 0 / 4%;
+
+  /* Utility variables for components */
+  --card-elev: 0 6px 30px rgba(var(--brand-ink), 0.45);
+
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -81,6 +89,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
 }
 
 .dark {
@@ -122,9 +132,38 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  html {
-    @apply font-sans;
+
+  /* Decorative helpers used by the quiz UI */
+  .quiz-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(800px 400px at 10% 10%, rgba(var(--brand-1),0.08), transparent 20%),
+                radial-gradient(600px 300px at 90% 90%, rgba(var(--brand-2),0.06), transparent 18%);
+    pointer-events: none;
+    z-index: -1;
+    mix-blend-mode: screen;
+  }
+
+  .grain {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(transparent, rgba(var(--grain)) 1px), linear-gradient(90deg, transparent, rgba(var(--grain)) 1px);
+    background-size: 100% 3px, 3px 100%;
+    opacity: 0.35;
+    z-index: 0;
+  }
+
+  @keyframes float-up {
+    from { transform: translateY(6px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .reveal {
+    animation: float-up 420ms cubic-bezier(.2,.9,.3,1) both;
   }
 }
