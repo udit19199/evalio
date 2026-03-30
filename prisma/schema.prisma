@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,10 +13,80 @@ datasource db {
 model User {
   id           String    @id @default(cuid())
   email        String    @unique
+  firstName    String
+  lastName     String
   passwordHash String
+  
+  // CS Grad Specific Stats
+  educationStatus String @default("Undergraduate") // e.g. "1st Year", "2nd Year", "3rd Year", "4th Year", "Postgraduate", "Graduate (Seeking)", "Professional"
+  hireabilityScore Float @default(0) 
+  overallRank      Int?
+  
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  
   attempts     Attempt[]
+  materials    Material[]
+  topicMastery UserTopicMastery[]
+}
+
+model UserTopicMastery {
+  id           String @id @default(cuid())
+  userId       String
+  topicId      String
+  
+  averageScore Float  @default(0)
+  attemptsCount Int   @default(0)
+  rank         Int?   
+  
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic        Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, topicId])
+}
+
+model Skill {
+  id     String  @id @default(cuid())
+  name   String  @unique 
+  topics Topic[]
+}
+
+model Topic {
+  id        String     @id @default(cuid())
+  name      String     @unique 
+  skillId   String?
+  skill     Skill?     @relation(fields: [skillId], references: [id], onDelete: SetNull)
+  
+  questions Question[] 
+  attempts  Attempt[]  
+  mastery   UserTopicMastery[]
+}
+
+model Material {
+  id        String   @id @default(cuid())
+  name      String   
+  content   String   
+  type      String   
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  questions Question[] 
+}
+
+model Question {
+  id            String   @id @default(cuid())
+  text          String   
+  options       String   
+  correctAnswer String
+  explanation   String
+  difficulty    String   
+  
+  topics        Topic[]  
+  
+  materialId    String?
+  material      Material? @relation(fields: [materialId], references: [id], onDelete: SetNull)
 }
 
 model Attempt {
@@ -30,6 +98,9 @@ model Attempt {
 
   userId String
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  topicId String? 
+  topic   Topic?  @relation(fields: [topicId], references: [id], onDelete: SetNull)
 
   @@index([userId, createdAt])
 }
