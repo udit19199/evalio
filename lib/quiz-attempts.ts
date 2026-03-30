@@ -2,6 +2,7 @@ import "server-only";
 
 import { prisma } from "@/lib/prisma";
 import type { QuizAttempt } from "@/types/quiz-attempt";
+import { calculateHireability, updateGlobalRanks, updateTopicRanks } from "./ranking";
 
 const toQuizAttempt = (attempt: {
   id: string;
@@ -27,6 +28,7 @@ export const createAttempt = async (
     correctAnswers: number;
     totalQuestions: number;
     scorePercent: number;
+    topicId?: string;
   },
 ): Promise<QuizAttempt> => {
   const created = await prisma.attempt.create({
@@ -35,11 +37,46 @@ export const createAttempt = async (
       correctAnswers: input.correctAnswers,
       totalQuestions: input.totalQuestions,
       scorePercent: input.scorePercent,
+      topicId: input.topicId,
     },
     include: {
       user: { select: { email: true } },
     },
   });
+
+  // If topic specific, update mastery
+  if (input.topicId) {
+    const existingMastery = await prisma.userTopicMastery.findUnique({
+      where: { userId_topicId: { userId: input.userId, topicId: input.topicId } }
+    });
+
+    if (existingMastery) {
+      const newCount = existingMastery.attemptsCount + 1;
+      const newAvg = (existingMastery.averageScore * existingMastery.attemptsCount + input.scorePercent) / newCount;
+      
+      await prisma.userTopicMastery.update({
+        where: { id: existingMastery.id },
+        data: {
+          averageScore: newAvg,
+          attemptsCount: newCount,
+        }
+      });
+    } else {
+      await prisma.userTopicMastery.create({
+        data: {
+          userId: input.userId,
+          topicId: input.topicId,
+          averageScore: input.scorePercent,
+          attemptsCount: 1,
+        }
+      });
+    }
+
+    // Trigger Ranking Updates (Optimistic / Sequential for now)
+    await updateTopicRanks(input.topicId);
+    await calculateHireability(input.userId);
+    await updateGlobalRanks();
+  }
 
   return toQuizAttempt(created);
 };
